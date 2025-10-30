@@ -10,13 +10,16 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
+import dev.yunsung.record.AudioRecorder;
+
 public class CommandListener extends ListenerAdapter {
 
 	private final Map<String, Command> commands = new HashMap<>();
+	private final AudioRecorder audioRecorder = new AudioRecorder();
 
 	public void registerCommands(JDA jda) {
 		List<Command> cmdList = List.of(
-			new MeetingStartCommand(),
+			new MeetingStartCommand(audioRecorder),
 			new MeetingStopCommand(),
 			new MeetingSummaryCommand()
 		);
