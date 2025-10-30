@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
@@ -37,7 +38,9 @@ public class AudioRecorder implements AudioReceiveHandler {
 	private boolean recording = false; // 녹음 여부
 
 	private final STT stt;
-	private TreeMap<Long, AudioText> audioTexts = new TreeMap<>();
+	private TreeMap<Long, AudioText> audioTexts;
+	private AtomicInteger activeSttJobs;
+	private final Object sttJobLock = new Object();
 
 	public AudioRecorder(STT stt) {
 		this.stt = stt;
@@ -102,60 +105,94 @@ public class AudioRecorder implements AudioReceiveHandler {
 			return;
 		}
 
-		AudioFormat audioFormat = AudioReceiveHandler.OUTPUT_FORMAT;
-		try {
-			byte[] audioData = outputStream.toByteArray();
-			AudioInputStream ais = new AudioInputStream(new ByteArrayInputStream(audioData), audioFormat,
-				audioData.length / audioFormat.getFrameSize());
-
-			// 음성 데이터의 길이를 구함
-			float durationInMillis = (float)(1000L * ais.getFrameLength()) / audioFormat.getFrameRate();
-			if (durationInMillis < 1000.0F) { // 길이가 1초 이상이라면 파일로 저장
-				return;
-			}
-
-			// audio/{회의 시작 시간}-{음성 채널 이름}/{사용자명}/{현재시간.wav} 구조로 파일을 저장
-			long now = System.currentTimeMillis();
-			String fileName = now + ".wav";
-			File root = new File("audio/" + getFolderName() + "/" + name);
-			File file = new File(root.getPath() + "/" + fileName);
-
-			// 폴더가 없다면 생성
-			root.mkdirs();
-
-			// 파일에 음성 데이터를 저장
-			AudioSystem.write(ais, AudioFileFormat.Type.WAVE, file);
-			ais.close();
-
-			// 음성을 텍스트로 변환하고 TreeMap에 저장
-			String text = stt.transcribe(getFolderName() + "/" + name + "/" + fileName);
-			audioTexts.put(now, new AudioText(name, text));
-		} catch (IOException | InterruptedException e) {
-			System.out.println(e.getMessage());
-		}
-
 		// 파일로 저장한 음성 데이터를 삭제
 		audioMap.remove(userId);
 		timerMap.remove(userId);
+
+		try {
+			long now = System.currentTimeMillis();
+
+			// wav 파일로 저장
+			saveWavFile(outputStream, now, name);
+
+			// 음성을 텍스트로 변환
+			transcribe(now, name);
+		} catch (IOException | InterruptedException e) {
+			System.out.println(e.getMessage());
+		}
+	}
+
+	private void saveWavFile(ByteArrayOutputStream outputStream, long now, String name) throws IOException {
+		AudioFormat audioFormat = AudioReceiveHandler.OUTPUT_FORMAT;
+		byte[] audioData = outputStream.toByteArray();
+
+		AudioInputStream ais = new AudioInputStream(new ByteArrayInputStream(audioData), audioFormat,
+			audioData.length / audioFormat.getFrameSize());
+
+		// 음성 데이터의 길이를 구함
+		float durationInMillis = (float)(1000L * ais.getFrameLength()) / audioFormat.getFrameRate();
+		if (durationInMillis < 1000.0F) { // 길이가 1초 이상이라면 파일로 저장
+			return;
+		}
+
+		// audio/{회의 시작 시간}-{음성 채널 이름}/{사용자명}/{현재시간.wav} 구조로 파일을 저장
+		String fileName = now + ".wav";
+		File root = new File("audio/" + getFolderName() + "/" + name);
+		File file = new File(root.getPath() + "/" + fileName);
+
+		// 폴더가 없다면 생성
+		root.mkdirs();
+
+		// 파일에 음성 데이터를 저장
+		AudioSystem.write(ais, AudioFileFormat.Type.WAVE, file);
+		ais.close();
+	}
+
+	private void transcribe(long now, String name) throws IOException, InterruptedException {
+		try {
+			activeSttJobs.incrementAndGet();
+			String text = stt.transcribe(getFolderName() + "/" + name + "/" + now + ".wav");
+			audioTexts.put(now, new AudioText(name, text));
+		} finally {
+			// 마지막으로 실행 중인 작업이라면 sttJobLock을 깨움
+			if (activeSttJobs.decrementAndGet() == 0) {
+				synchronized (sttJobLock) {
+					sttJobLock.notifyAll();
+				}
+			}
+		}
 	}
 
 	public void startRecording(Channel channel) {
 		audioMap = new HashMap<>();
 		timerMap = new HashMap<>();
 		audioTexts = new TreeMap<>();
+		activeSttJobs = new AtomicInteger(0);
 		this.channel = channel;
-		this.dateTime = LocalDateTime.now();
+		dateTime = LocalDateTime.now();
 		recording = true;
 	}
 
 	public void stopRecording() {
 		recording = false;
+
 		// 아직 저장되지 않은 음성 데이터가 있다면 저장
 		for (Long key : timerMap.keySet()) {
 			UserTimer userTimer = timerMap.get(key);
 			userTimer.timer().cancel();
 			this.saveVoice(key, userTimer.name());
 		}
+
+		// 모든 STT 작업이 완료될 때까지 대기
+		try {
+			synchronized (sttJobLock) {
+				while (activeSttJobs.get() > 0) {
+					sttJobLock.wait();
+				}
+			}
+		} catch (InterruptedException ignored) {
+		}
+
 		channel = null;
 	}
 
