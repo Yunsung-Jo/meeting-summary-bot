@@ -39,7 +39,7 @@ public class AudioRecorder implements AudioReceiveHandler {
 
 	public String getFolderName() {
 		String dt = dateTime.format(formatter);
-		return "audio/" + dt + "-" + channel.getName();
+		return dt + "-" + channel.getName();
 	}
 
 	@Override
@@ -101,7 +101,7 @@ public class AudioRecorder implements AudioReceiveHandler {
 			}
 
 			// audio/{회의 시작 시간}-{음성 채널 이름}/{사용자명}/{현재시간.wav} 구조로 파일을 저장
-			File root = new File(getFolderName() + "/" + name);
+			File root = new File("audio/" + getFolderName() + "/" + name);
 			File file = new File(root.getPath() + "/" + System.currentTimeMillis() + ".wav");
 
 			// 폴더가 없다면 생성
