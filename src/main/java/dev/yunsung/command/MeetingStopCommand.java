@@ -41,8 +41,6 @@ public record MeetingStopCommand(AudioRecorder audioRecorder) implements Command
 		// 봇 상태 변경
 		event.getJDA().getPresence().setActivity(Activity.playing("대기 중"));
 
-		// TODO: wav → text 기능 구현
-
 		// TODO: 회의 요약 기능 구현
 	}
 }

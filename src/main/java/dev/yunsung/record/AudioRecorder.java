@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.TreeMap;
 
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
@@ -22,6 +23,8 @@ import net.dv8tion.jda.api.audio.AudioReceiveHandler;
 import net.dv8tion.jda.api.audio.UserAudio;
 import net.dv8tion.jda.api.entities.channel.Channel;
 
+import dev.yunsung.stt.STT;
+
 public class AudioRecorder implements AudioReceiveHandler {
 
 	static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
@@ -33,8 +36,19 @@ public class AudioRecorder implements AudioReceiveHandler {
 	private LocalDateTime dateTime; // 회의 시작 시간
 	private boolean recording = false; // 녹음 여부
 
+	private final STT stt;
+	private TreeMap<Long, AudioText> audioTexts = new TreeMap<>();
+
+	public AudioRecorder(STT stt) {
+		this.stt = stt;
+	}
+
 	public Channel getChannel() {
 		return channel;
+	}
+
+	public TreeMap<Long, AudioText> getAudioTexts() {
+		return audioTexts;
 	}
 
 	public String getFolderName() {
@@ -101,8 +115,10 @@ public class AudioRecorder implements AudioReceiveHandler {
 			}
 
 			// audio/{회의 시작 시간}-{음성 채널 이름}/{사용자명}/{현재시간.wav} 구조로 파일을 저장
+			long now = System.currentTimeMillis();
+			String fileName = now + ".wav";
 			File root = new File("audio/" + getFolderName() + "/" + name);
-			File file = new File(root.getPath() + "/" + System.currentTimeMillis() + ".wav");
+			File file = new File(root.getPath() + "/" + fileName);
 
 			// 폴더가 없다면 생성
 			root.mkdirs();
@@ -110,7 +126,12 @@ public class AudioRecorder implements AudioReceiveHandler {
 			// 파일에 음성 데이터를 저장
 			AudioSystem.write(ais, AudioFileFormat.Type.WAVE, file);
 			ais.close();
-		} catch (IOException ignored) {
+
+			// 음성을 텍스트로 변환하고 TreeMap에 저장
+			String text = stt.transcribe(getFolderName() + "/" + name + "/" + fileName);
+			audioTexts.put(now, new AudioText(name, text));
+		} catch (IOException | InterruptedException e) {
+			System.out.println(e.getMessage());
 		}
 
 		// 파일로 저장한 음성 데이터를 삭제
@@ -121,6 +142,7 @@ public class AudioRecorder implements AudioReceiveHandler {
 	public void startRecording(Channel channel) {
 		audioMap = new HashMap<>();
 		timerMap = new HashMap<>();
+		audioTexts = new TreeMap<>();
 		this.channel = channel;
 		this.dateTime = LocalDateTime.now();
 		recording = true;
@@ -130,9 +152,11 @@ public class AudioRecorder implements AudioReceiveHandler {
 		recording = false;
 		// 아직 저장되지 않은 음성 데이터가 있다면 저장
 		for (Long key : timerMap.keySet()) {
-			this.saveVoice(key, timerMap.get(key).name());
+			UserTimer userTimer = timerMap.get(key);
+			userTimer.timer().cancel();
+			this.saveVoice(key, userTimer.name());
 		}
-		this.channel = null;
+		channel = null;
 	}
 
 	@Override

@@ -11,11 +11,14 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import dev.yunsung.record.AudioRecorder;
+import dev.yunsung.stt.STT;
+import dev.yunsung.stt.Whisper;
 
 public class CommandListener extends ListenerAdapter {
 
 	private final Map<String, Command> commands = new HashMap<>();
-	private final AudioRecorder audioRecorder = new AudioRecorder();
+	private final STT stt = new Whisper();
+	private final AudioRecorder audioRecorder = new AudioRecorder(stt);
 
 	public void registerCommands(JDA jda) {
 		List<Command> cmdList = List.of(
