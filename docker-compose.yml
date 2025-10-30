@@ -1,0 +1,20 @@
+services:
+  whisper:
+    build:
+      context: ./whisper
+    volumes:
+      - ./audio:/audio:ro
+    environment:
+      - WHISPER_MODEL=small
+      - WHISPER_DEVICE=cpu
+      - WHISPER_COMPUTE_TYPE=int8
+
+  discord-bot:
+    build:
+      context: .
+    env_file:
+      - .env
+    volumes:
+      - ./audio:/app/audio:rw
+    depends_on:
+      - whisper
