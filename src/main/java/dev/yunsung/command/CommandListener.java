@@ -20,7 +20,7 @@ public class CommandListener extends ListenerAdapter {
 	public void registerCommands(JDA jda) {
 		List<Command> cmdList = List.of(
 			new MeetingStartCommand(audioRecorder),
-			new MeetingStopCommand(),
+			new MeetingStopCommand(audioRecorder),
 			new MeetingSummaryCommand()
 		);
 

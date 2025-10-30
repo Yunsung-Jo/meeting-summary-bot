@@ -127,12 +127,12 @@ public class AudioRecorder implements AudioReceiveHandler {
 	}
 
 	public void stopRecording() {
-		this.channel = null;
 		recording = false;
 		// 아직 저장되지 않은 음성 데이터가 있다면 저장
 		for (Long key : timerMap.keySet()) {
 			this.saveVoice(key, timerMap.get(key).name());
 		}
+		this.channel = null;
 	}
 
 	@Override
