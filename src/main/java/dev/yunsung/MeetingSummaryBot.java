@@ -23,5 +23,8 @@ public class MeetingSummaryBot {
 			.enableIntents(GatewayIntent.MESSAGE_CONTENT)
 			.addEventListeners(commandListener)
 			.build();
+
+		// 슬래시 명령어 등록
+		commandListener.registerCommands(jda);
 	}
 }
