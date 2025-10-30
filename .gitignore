@@ -39,5 +39,5 @@ bin/
 ### Mac OS ###
 .DS_Store
 
-### Properties ###
-local.properties
+### Env ###
+.env
