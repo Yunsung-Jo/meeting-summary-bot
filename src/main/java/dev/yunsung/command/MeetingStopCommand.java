@@ -51,14 +51,18 @@ public record MeetingStopCommand(AudioRecorder audioRecorder, Summarizer summari
 		try {
 			// 회의 내용 저장
 			TreeMap<Long, AudioText> audioTexts = audioRecorder.getAudioTexts();
-			File file = CsvExporter.saveAsCsv(audioTexts, folderName);
 
 			// 회의 요약
 			String summary = summarizer.summarize(audioTexts);
-			event.getHook()
-				.sendMessage(summary)
-				.addFiles(FileUpload.fromData(file))
-				.queue();
+			if (audioTexts.isEmpty()) {
+				event.getHook().sendMessage(summary).queue();
+			} else {
+				File file = CsvExporter.saveAsCsv(audioTexts, folderName);
+				event.getHook()
+					.sendMessage(summary)
+					.addFiles(FileUpload.fromData(file))
+					.queue();
+			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
