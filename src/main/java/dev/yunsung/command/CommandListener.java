@@ -13,18 +13,21 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import dev.yunsung.record.AudioRecorder;
 import dev.yunsung.stt.STT;
 import dev.yunsung.stt.Whisper;
+import dev.yunsung.summary.GeminiSummarizer;
+import dev.yunsung.summary.Summarizer;
 
 public class CommandListener extends ListenerAdapter {
 
 	private final Map<String, Command> commands = new HashMap<>();
 	private final STT stt = new Whisper();
 	private final AudioRecorder audioRecorder = new AudioRecorder(stt);
+	private final Summarizer summarizer = new GeminiSummarizer();
 
 	public void registerCommands(JDA jda) {
 		List<Command> cmdList = List.of(
 			new MeetingStartCommand(audioRecorder),
-			new MeetingStopCommand(audioRecorder),
-			new MeetingSummaryCommand()
+			new MeetingStopCommand(audioRecorder, summarizer),
+			new MeetingSummaryCommand(audioRecorder, summarizer)
 		);
 
 		for (Command cmd : cmdList) {

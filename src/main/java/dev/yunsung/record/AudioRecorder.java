@@ -151,8 +151,8 @@ public class AudioRecorder implements AudioReceiveHandler {
 	private void transcribe(long now, String name) throws IOException, InterruptedException {
 		try {
 			activeSttJobs.incrementAndGet();
-			String text = stt.transcribe(getFolderName() + "/" + name + "/" + now + ".wav");
-			audioTexts.put(now, new AudioText(name, text));
+			String sentence = stt.transcribe(getFolderName() + "/" + name + "/" + now + ".wav");
+			audioTexts.put(now, new AudioText(name, sentence));
 		} finally {
 			// 마지막으로 실행 중인 작업이라면 sttJobLock을 깨움
 			if (activeSttJobs.decrementAndGet() == 0) {

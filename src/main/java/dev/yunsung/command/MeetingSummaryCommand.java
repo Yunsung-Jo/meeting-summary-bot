@@ -4,7 +4,10 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
-public class MeetingSummaryCommand implements Command {
+import dev.yunsung.record.AudioRecorder;
+import dev.yunsung.summary.Summarizer;
+
+public record MeetingSummaryCommand(AudioRecorder audioRecorder, Summarizer summarizer) implements Command {
 
 	@Override
 	public String getName() {
@@ -18,6 +21,15 @@ public class MeetingSummaryCommand implements Command {
 
 	@Override
 	public void execute(SlashCommandInteractionEvent event) {
+		if (!audioRecorder.canReceiveUser()) {
+			event.reply("진행 중인 회의가 없습니다.").queue();
+			return;
+		}
 
+		event.deferReply().queue();
+
+		// 회의 요약
+		String summary = summarizer.summarize(audioRecorder.getAudioTexts());
+		event.getHook().sendMessage(summary).queue();
 	}
 }
