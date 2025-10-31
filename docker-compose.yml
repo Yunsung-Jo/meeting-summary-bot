@@ -9,6 +9,7 @@ services:
       - WHISPER_MODEL=large-v3
       - WHISPER_DEVICE=cpu
       - WHISPER_COMPUTE_TYPE=int8
+      - WHISPER_LANGUAGE=ko
 
   discord-bot:
     build:

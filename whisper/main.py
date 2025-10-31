@@ -7,7 +7,6 @@ from pydantic import BaseModel
 MODEL_SIZE = os.getenv("WHISPER_MODEL", "base")
 DEVICE = os.getenv("WHISPER_DEVICE", "cpu")
 COMPUTE_TYPE = os.getenv("WHISPER_COMPUTE_TYPE", "int8")
-DEFAULT_LANGUAGE = os.getenv("WHISPER_LANGUAGE", "ko")
 
 print(f"Whisper 모델 로드 중: {MODEL_SIZE} (device: {DEVICE}, compute: {COMPUTE_TYPE})")
 try:
@@ -49,7 +48,11 @@ def transcribe_audio_path(request: TranscriptionRequest):
 
     try:
         # faster-whisper로 텍스트 변환 수행
-        segments, info = model.transcribe(file_path, beam_size=5, language=DEFAULT_LANGUAGE)
+        language = os.getenv("WHISPER_LANGUAGE")
+        if language:
+            segments, info = model.transcribe(file_path, beam_size=5, language=language)
+        else:
+            segments, info = model.transcribe(file_path, beam_size=5)
 
         # 변환된 텍스트 조합
         transcription = " ".join(segment.text for segment in segments).strip()
