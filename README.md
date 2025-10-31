@@ -22,6 +22,11 @@ faster-whisper와 gemini를 기반으로 디스코드 음성 대화를 요약하
     ```
 
 5. 실행에는 도커가 필요하고 `docker compose up --build -d` 명령어로 실행할 수 있습니다.
+6. [Discord for Developers](https://discord.com/developers/applications)에서 Settings → OAuth2 → OAuth2 URL Generator의 bot을 체크하고 Bot Permissions는 필요한 권한만 체크해 주세요.
+
+   <img width="800" alt="permissions" src="https://github.com/user-attachments/assets/3ee22868-341c-4d15-aaa3-43b0d031118f" />
+
+7. 생성된 URL로 원하는 서버에 봇을 추가하세요.
 
 ## 커스텀
 1. 실행 환경에 따라 동작하지 않을 수 있습니다.<br>
@@ -37,4 +42,4 @@ faster-whisper와 gemini를 기반으로 디스코드 음성 대화를 요약하
 2. `whisper-api` 컨테이너에서 `INFO: Uvicorn running on http://0.0.0.0:8000⁠ (Press CTRL+C to quit)` 로그를 확인한 후, 디스코드에서 명령어를 실행하면 됩니다.
 
 ## 사용 예시
-<img width="800" alt="example" src="https://github.com/user-attachments/assets/cad288df-ffc2-4da2-9454-6fb455ed8a70" />
+<img width="800" alt="example" src="https://github.com/user-attachments/assets/bf9a15ae-edc5-486b-adf1-947f42ee4505" />
