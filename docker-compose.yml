@@ -1,5 +1,5 @@
 services:
-  whisper:
+  whisper-api:
     build:
       context: ./whisper
     volumes:
@@ -11,7 +11,7 @@ services:
       - WHISPER_COMPUTE_TYPE=int8
       - WHISPER_LANGUAGE=ko
 
-  discord-bot:
+  meeting-summary-bot:
     build:
       context: .
     env_file:
@@ -19,5 +19,3 @@ services:
     volumes:
       - ./audio:/app/audio:rw
       - ./PROMPT:/app/PROMPT:ro
-    depends_on:
-      - whisper
