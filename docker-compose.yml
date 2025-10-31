@@ -17,5 +17,6 @@ services:
       - .env
     volumes:
       - ./audio:/app/audio:rw
+      - ./PROMPT:/app/PROMPT:ro
     depends_on:
       - whisper

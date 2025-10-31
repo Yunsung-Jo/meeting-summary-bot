@@ -37,16 +37,16 @@ public record MeetingStopCommand(AudioRecorder audioRecorder, Summarizer summari
 		Guild guild = event.getGuild();
 		assert guild != null;
 
-		// 회의 종료
-		event.deferReply().queue();
-		String folderName = audioRecorder.getFolderName();
-		audioRecorder.stopRecording();
-
 		// 봇과 음성 채널의 연결을 해제
 		guild.getAudioManager().closeAudioConnection();
 
 		// 봇 상태 변경
 		event.getJDA().getPresence().setActivity(Activity.customStatus("대기 중"));
+
+		// 회의 종료
+		event.deferReply().queue();
+		String folderName = audioRecorder.getFolderName();
+		audioRecorder.stopRecording();
 
 		try {
 			// 회의 내용 저장
