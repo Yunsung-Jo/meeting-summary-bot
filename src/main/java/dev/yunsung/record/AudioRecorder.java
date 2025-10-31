@@ -29,7 +29,7 @@ import dev.yunsung.stt.STT;
 public class AudioRecorder implements AudioReceiveHandler {
 
 	static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
-	static final int RECORD_DELAY = 1000; // 1초 딜레이
+	static final int RECORD_DELAY = Integer.parseInt(System.getenv("RECORD_DELAY"));
 
 	private Map<Long, ByteArrayOutputStream> audioMap; // 음성 데이터
 	private Map<Long, UserTimer> timerMap; // 유저별로 문장을 끊어 저장하기 위한 타이머
