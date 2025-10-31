@@ -23,7 +23,7 @@ public class MeetingSummaryBot {
 			.createDefault(token)
 			.enableIntents(GatewayIntent.MESSAGE_CONTENT)
 			.addEventListeners(commandListener)
-			.setActivity(Activity.playing("대기 중"))
+			.setActivity(Activity.customStatus("대기 중"))
 			.build();
 
 		// 슬래시 명령어 등록

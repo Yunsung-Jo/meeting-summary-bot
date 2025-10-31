@@ -46,7 +46,7 @@ public record MeetingStopCommand(AudioRecorder audioRecorder, Summarizer summari
 		guild.getAudioManager().closeAudioConnection();
 
 		// 봇 상태 변경
-		event.getJDA().getPresence().setActivity(Activity.playing("대기 중"));
+		event.getJDA().getPresence().setActivity(Activity.customStatus("대기 중"));
 
 		try {
 			// 회의 내용 저장
