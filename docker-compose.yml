@@ -10,6 +10,8 @@ services:
       - WHISPER_DEVICE=cpu
       - WHISPER_COMPUTE_TYPE=int8
       - WHISPER_LANGUAGE=ko
+    ports:
+      - "8000:8000"
 
   meeting-summary-bot:
     build:
