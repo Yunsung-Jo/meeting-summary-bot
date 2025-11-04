@@ -3,13 +3,14 @@ package dev.yunsung.summary;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.TreeMap;
 
 import com.google.genai.Client;
 import com.google.genai.types.GenerateContentResponse;
 
-import dev.yunsung.record.AudioText;
+import dev.yunsung.record.AudioData;
 import dev.yunsung.util.TimeUtil;
 
 public class GeminiSummarizer implements Summarizer {
@@ -32,14 +33,14 @@ public class GeminiSummarizer implements Summarizer {
 	}
 
 	@Override
-	public String summarize(TreeMap<Long, AudioText> audioTexts) {
-		if (audioTexts.isEmpty()) {
+	public String summarize(TreeMap<LocalDateTime, AudioData> archiveAudios) {
+		if (archiveAudios.isEmpty()) {
 			return "녹음된 음성이 없어 회의록을 생성할 수 없습니다.";
 		}
 
-		List<String> attendees = getAttendees(audioTexts);
-		String timestamp = TimeUtil.formatTimestamp(audioTexts.firstKey());
-		String script = getScript(audioTexts);
+		List<String> attendees = getAttendees(archiveAudios);
+		String timestamp = TimeUtil.formatTimestamp(archiveAudios.firstKey());
+		String script = getScript(archiveAudios);
 
 		String prompt = PROMPT
 			.replace("%attendees", String.join(",", attendees))
@@ -54,17 +55,17 @@ public class GeminiSummarizer implements Summarizer {
 		}
 	}
 
-	private List<String> getAttendees(TreeMap<Long, AudioText> audioTexts) {
-		return audioTexts.values().stream()
-			.map(AudioText::name)
+	private List<String> getAttendees(TreeMap<LocalDateTime, AudioData> archiveAudios) {
+		return archiveAudios.values().stream()
+			.map(AudioData::getSpeaker)
 			.distinct()
 			.toList();
 	}
 
-	private String getScript(TreeMap<Long, AudioText> audioTexts) {
+	private String getScript(TreeMap<LocalDateTime, AudioData> archiveAudios) {
 		StringBuilder sb = new StringBuilder();
-		for (AudioText audioText : audioTexts.values()) {
-			sb.append(audioText.toString()).append("\n");
+		for (AudioData audioData : archiveAudios.values()) {
+			sb.append(audioData.toString()).append("\n");
 		}
 		return sb.toString();
 	}
