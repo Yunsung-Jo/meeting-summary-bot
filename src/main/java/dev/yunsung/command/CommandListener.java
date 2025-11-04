@@ -11,20 +11,19 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import dev.yunsung.record.RecorderService;
-import dev.yunsung.summary.GeminiSummarizer;
-import dev.yunsung.summary.Summarizer;
+import dev.yunsung.summary.SummaryService;
 
 public class CommandListener extends ListenerAdapter {
 
 	private final Map<String, Command> commands = new HashMap<>();
 	private final RecorderService recorderService = new RecorderService();
-	private final Summarizer summarizer = new GeminiSummarizer();
+	private final SummaryService summaryService = new SummaryService(System.getenv("MODEL_NAME"));
 
 	public void registerCommands(JDA jda) {
 		List<Command> cmdList = List.of(
 			new MeetingStartCommand(recorderService),
-			new MeetingStopCommand(recorderService, summarizer),
-			new MeetingSummaryCommand(recorderService, summarizer)
+			new MeetingStopCommand(recorderService, summaryService),
+			new MeetingSummaryCommand(recorderService, summaryService)
 		);
 
 		for (Command cmd : cmdList) {

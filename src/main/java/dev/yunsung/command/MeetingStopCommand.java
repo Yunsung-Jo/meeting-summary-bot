@@ -14,9 +14,9 @@ import net.dv8tion.jda.api.utils.FileUpload;
 import dev.yunsung.record.AudioData;
 import dev.yunsung.record.CsvExporter;
 import dev.yunsung.record.RecorderService;
-import dev.yunsung.summary.Summarizer;
+import dev.yunsung.summary.SummaryService;
 
-public record MeetingStopCommand(RecorderService recorderService, Summarizer summarizer) implements Command {
+public record MeetingStopCommand(RecorderService recorderService, SummaryService summaryService) implements Command {
 
 	@Override
 	public String getName() {
@@ -50,7 +50,7 @@ public record MeetingStopCommand(RecorderService recorderService, Summarizer sum
 		File file = CsvExporter.saveAsCsv(archiveAudios, folderName);
 
 		// 회의 요약
-		String summary = summarizer.summarize(archiveAudios);
+		String summary = summaryService.summarize(archiveAudios);
 		if (archiveAudios.isEmpty()) {
 			event.getHook().sendMessage(summary).queue();
 		} else {

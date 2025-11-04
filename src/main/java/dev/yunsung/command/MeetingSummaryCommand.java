@@ -8,9 +8,9 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 import dev.yunsung.record.RecorderService;
-import dev.yunsung.summary.Summarizer;
+import dev.yunsung.summary.SummaryService;
 
-public record MeetingSummaryCommand(RecorderService recorderService, Summarizer summarizer) implements Command {
+public record MeetingSummaryCommand(RecorderService recorderService, SummaryService summaryService) implements Command {
 
 	@Override
 	public String getName() {
@@ -35,7 +35,7 @@ public record MeetingSummaryCommand(RecorderService recorderService, Summarizer 
 		event.deferReply().queue();
 
 		// 회의 요약
-		String summary = summarizer.summarize(audioRecorder.getArchiveAudios());
+		String summary = summaryService.summarize(audioRecorder.getArchiveAudios());
 		event.getHook().sendMessage(summary).queue();
 	}
 }

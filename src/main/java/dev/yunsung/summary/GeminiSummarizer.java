@@ -15,6 +15,12 @@ import dev.yunsung.util.TimeUtil;
 
 public class GeminiSummarizer implements Summarizer {
 
+	private static final GeminiSummarizer instance = new GeminiSummarizer();
+
+	public static GeminiSummarizer getInstance() {
+		return instance;
+	}
+
 	/**
 	 * %attendees: 참석자<br>
 	 * %timestamp: 일시<br>
