@@ -1,6 +1,7 @@
 package dev.yunsung.command;
 
-import net.dv8tion.jda.api.entities.Activity;
+import java.util.Objects;
+
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
@@ -11,9 +12,9 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
-import dev.yunsung.record.AudioRecorder;
+import dev.yunsung.record.RecorderService;
 
-public record MeetingStartCommand(AudioRecorder audioRecorder) implements Command {
+public record MeetingStartCommand(RecorderService recorderService) implements Command {
 
 	@Override
 	public String getName() {
@@ -31,7 +32,10 @@ public record MeetingStartCommand(AudioRecorder audioRecorder) implements Comman
 
 	@Override
 	public void execute(SlashCommandInteractionEvent event) {
-		if (audioRecorder.canReceiveUser()) {
+		Guild guild = Objects.requireNonNull(event.getGuild());
+		var audioRecorder = recorderService.getRecorder(guild);
+
+		if (audioRecorder.isRecording()) {
 			event.reply(audioRecorder.getChannel().getAsMention() + "에서 회의가 진행 중입니다.").queue();
 			return;
 		}
@@ -39,17 +43,11 @@ public record MeetingStartCommand(AudioRecorder audioRecorder) implements Comman
 		OptionMapping channelOption = event.getOption("채널");
 		assert channelOption != null;
 
-		Guild guild = event.getGuild();
-		assert guild != null;
-
 		// 음성 채널에 봇을 연결
 		VoiceChannel voiceChannel = channelOption.getAsChannel().asVoiceChannel();
 		guild.getAudioManager().openAudioConnection(voiceChannel);
 		guild.getAudioManager().setReceivingHandler(audioRecorder);
 		audioRecorder.startRecording(voiceChannel);
-
-		// 봇 상태 변경
-		event.getJDA().getPresence().setActivity(Activity.listening(voiceChannel.getName() + "에서 회의 중"));
 
 		// 채널에 메시지 전송
 		event.reply(voiceChannel.getAsMention() + "에서 회의를 시작합니다.").queue();

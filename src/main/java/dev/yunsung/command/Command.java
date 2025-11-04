@@ -9,5 +9,5 @@ public interface Command {
 
 	SlashCommandData slash();
 
-	void execute(SlashCommandInteractionEvent event);
+	void execute(SlashCommandInteractionEvent event) throws Exception;
 }
