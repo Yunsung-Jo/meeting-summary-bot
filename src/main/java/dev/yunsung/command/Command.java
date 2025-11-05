@@ -2,6 +2,7 @@ package dev.yunsung.command;
 
 import java.util.List;
 
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
@@ -47,5 +48,9 @@ public abstract class Command {
 					System.out.println(e.getMessage());
 				}
 			});
+	}
+
+	public void autoComplete(CommandAutoCompleteInteractionEvent event) {
+
 	}
 }

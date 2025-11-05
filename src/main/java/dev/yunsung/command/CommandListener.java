@@ -7,9 +7,11 @@ import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
+import dev.yunsung.command.backup.BackupCommand;
 import dev.yunsung.command.meeting.MeetingCommand;
 
 public class CommandListener extends ListenerAdapter {
@@ -18,7 +20,8 @@ public class CommandListener extends ListenerAdapter {
 
 	public void registerCommands(JDA jda) {
 		List<Command> cmdList = List.of(
-			new MeetingCommand()
+			new MeetingCommand(),
+			new BackupCommand()
 		);
 
 		for (Command cmd : cmdList) {
@@ -34,16 +37,13 @@ public class CommandListener extends ListenerAdapter {
 
 	@Override
 	public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
-		if (event.getGuild() == null) {
-			return;
-		}
-
 		Command cmd = commands.get(event.getName());
-		if (cmd != null) {
-			cmd.execute(event);
-			return;
-		}
+		cmd.execute(event);
+	}
 
-		event.reply("알 수 없는 명령어입니다.").queue();
+	@Override
+	public void onCommandAutoCompleteInteraction(@NotNull CommandAutoCompleteInteractionEvent event) {
+		Command cmd = commands.get(event.getName());
+		cmd.autoComplete(event);
 	}
 }

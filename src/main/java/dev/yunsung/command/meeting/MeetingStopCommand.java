@@ -1,6 +1,9 @@
 package dev.yunsung.command.meeting;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.TreeMap;
@@ -59,6 +62,10 @@ public record MeetingStopCommand(RecorderService recorderService, SummaryService
 				.addFiles(FileUpload.fromData(file))
 				.queue();
 		}
+
+		// 요약 내용 저장
+		Path resultPath = Paths.get("audio/" + folderName + "/result.txt");
+		Files.writeString(resultPath, summary);
 
 		recorderService.removeRecorder(guild.getIdLong());
 	}
