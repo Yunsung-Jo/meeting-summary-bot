@@ -28,7 +28,7 @@ public class BackupCommand extends Command {
 
 	@Override
 	public String getName() {
-		return "백업";
+		return System.getenv("BACKUP_COMMAND");
 	}
 
 	@Override

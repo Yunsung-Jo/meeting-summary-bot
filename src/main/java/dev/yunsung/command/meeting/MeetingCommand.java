@@ -14,7 +14,7 @@ public class MeetingCommand extends Command {
 
 	@Override
 	public String getName() {
-		return "회의";
+		return System.getenv("MEETING_COMMAND");
 	}
 
 	@Override

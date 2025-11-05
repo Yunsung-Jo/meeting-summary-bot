@@ -18,7 +18,7 @@ public record MeetingStartCommand(RecorderService recorderService) implements Su
 
 	@Override
 	public String getName() {
-		return "시작";
+		return System.getenv("MEETING_START_COMMAND");
 	}
 
 	@Override

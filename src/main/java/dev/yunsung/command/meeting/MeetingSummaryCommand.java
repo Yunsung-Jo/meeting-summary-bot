@@ -15,7 +15,7 @@ public record MeetingSummaryCommand(RecorderService recorderService, SummaryServ
 
 	@Override
 	public String getName() {
-		return "요약";
+		return System.getenv("MEETING_SUMMARY_COMMAND");
 	}
 
 	@Override

@@ -23,7 +23,7 @@ public record MeetingStopCommand(RecorderService recorderService, SummaryService
 
 	@Override
 	public String getName() {
-		return "종료";
+		return System.getenv("MEETING_STOP_COMMAND");
 	}
 
 	public SubcommandData getData() {
