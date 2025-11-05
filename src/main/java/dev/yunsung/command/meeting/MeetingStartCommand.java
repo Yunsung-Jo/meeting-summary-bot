@@ -1,4 +1,4 @@
-package dev.yunsung.command;
+package dev.yunsung.command.meeting;
 
 import java.util.Objects;
 
@@ -8,25 +8,25 @@ import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
+import dev.yunsung.command.SubCommand;
 import dev.yunsung.record.RecorderService;
 
-public record MeetingStartCommand(RecorderService recorderService) implements Command {
+public record MeetingStartCommand(RecorderService recorderService) implements SubCommand {
 
 	@Override
 	public String getName() {
-		return "회의";
+		return "시작";
 	}
 
 	@Override
-	public SlashCommandData slash() {
+	public SubcommandData getData() {
 		OptionData channelOption = new OptionData(OptionType.CHANNEL, "채널", "녹음할 음성 채널을 선택하세요.", true)
 			.setChannelTypes(ChannelType.VOICE);
 
-		return Commands.slash(getName(), "지정한 음성 채널을 녹음합니다.")
+		return new SubcommandData(getName(), "지정한 음성 채널을 녹음합니다.")
 			.addOptions(channelOption);
 	}
 

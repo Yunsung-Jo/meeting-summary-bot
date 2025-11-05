@@ -10,20 +10,15 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
-import dev.yunsung.record.RecorderService;
-import dev.yunsung.summary.SummaryService;
+import dev.yunsung.command.meeting.MeetingCommand;
 
 public class CommandListener extends ListenerAdapter {
 
 	private final Map<String, Command> commands = new HashMap<>();
-	private final RecorderService recorderService = new RecorderService();
-	private final SummaryService summaryService = new SummaryService();
 
 	public void registerCommands(JDA jda) {
 		List<Command> cmdList = List.of(
-			new MeetingStartCommand(recorderService),
-			new MeetingStopCommand(recorderService, summaryService),
-			new MeetingSummaryCommand(recorderService, summaryService)
+			new MeetingCommand()
 		);
 
 		for (Command cmd : cmdList) {
@@ -32,7 +27,7 @@ public class CommandListener extends ListenerAdapter {
 
 		jda.updateCommands().addCommands(
 			cmdList.stream()
-				.map(Command::slash)
+				.map(Command::getData)
 				.toList()
 		).queue();
 	}
@@ -43,15 +38,12 @@ public class CommandListener extends ListenerAdapter {
 			return;
 		}
 
-		try {
-			Command cmd = commands.get(event.getName());
-			if (cmd != null) {
-				cmd.execute(event);
-				return;
-			}
-			event.reply("알 수 없는 명령어입니다.").queue();
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
+		Command cmd = commands.get(event.getName());
+		if (cmd != null) {
+			cmd.execute(event);
+			return;
 		}
+
+		event.reply("알 수 없는 명령어입니다.").queue();
 	}
 }

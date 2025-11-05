@@ -1,13 +1,51 @@
 package dev.yunsung.command;
 
+import java.util.List;
+
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
-public interface Command {
+public abstract class Command {
 
-	String getName();
+	public abstract String getName();
 
-	SlashCommandData slash();
+	public String getDescription() {
+		return "Description";
+	}
 
-	void execute(SlashCommandInteractionEvent event) throws Exception;
+	public SlashCommandData getData() {
+		SlashCommandData base = Commands.slash(getName(), getDescription());
+		List<SubCommand> sub = getSubCommands();
+
+		if (!sub.isEmpty()) {
+			base.addSubcommands(getSubCommands().stream()
+				.map(SubCommand::getData)
+				.toList());
+		}
+
+		return base;
+	}
+
+	protected List<SubCommand> getSubCommands() {
+		return List.of();
+	}
+
+	public void execute(SlashCommandInteractionEvent event) {
+		String subCmd = event.getSubcommandName();
+		if (subCmd == null) {
+			return;
+		}
+
+		getSubCommands().stream()
+			.filter(cmd -> cmd.getName().equals(subCmd))
+			.findFirst()
+			.ifPresent(cmd -> {
+				try {
+					cmd.execute(event);
+				} catch (Exception e) {
+					System.out.println(e.getMessage());
+				}
+			});
+	}
 }

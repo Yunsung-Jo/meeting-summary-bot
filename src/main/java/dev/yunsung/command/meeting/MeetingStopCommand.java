@@ -1,4 +1,4 @@
-package dev.yunsung.command;
+package dev.yunsung.command.meeting;
 
 import java.io.File;
 import java.time.LocalDateTime;
@@ -7,24 +7,24 @@ import java.util.TreeMap;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.utils.FileUpload;
 
+import dev.yunsung.command.SubCommand;
 import dev.yunsung.record.AudioData;
 import dev.yunsung.record.CsvExporter;
 import dev.yunsung.record.RecorderService;
 import dev.yunsung.summary.SummaryService;
 
-public record MeetingStopCommand(RecorderService recorderService, SummaryService summaryService) implements Command {
+public record MeetingStopCommand(RecorderService recorderService, SummaryService summaryService) implements SubCommand {
 
 	@Override
 	public String getName() {
 		return "종료";
 	}
 
-	public SlashCommandData slash() {
-		return Commands.slash(getName(), "진행 중인 회의를 종료하고 요약합니다.");
+	public SubcommandData getData() {
+		return new SubcommandData(getName(), "진행 중인 회의를 종료하고 요약합니다.");
 	}
 
 	@Override
