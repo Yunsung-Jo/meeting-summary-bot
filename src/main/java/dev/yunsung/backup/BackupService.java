@@ -29,7 +29,7 @@ public class BackupService {
 		return useBackup;
 	}
 
-	public String backup(String title, String content) throws Exception {
-		return backupStrategy.backup(title, content);
+	public String backup(String path, String title, String content) throws Exception {
+		return backupStrategy.backup(path, title, content);
 	}
 }

@@ -14,7 +14,6 @@ import dev.yunsung.util.HttpUtil;
 public class Confluence implements BackupStrategy {
 
 	private final String space = System.getenv("CONFLUENCE_SPACE");
-	private final String parentId = System.getenv("CONFLUENCE_PARENT_ID");
 	private final String baseUri = "https://" + System.getenv("CONFLUENCE_DOMAIN") + ".atlassian.net/wiki";
 	private final Map<String, String> headers = Map.of(
 		"Authorization", "Basic " + Base64.getEncoder().encodeToString(
@@ -24,7 +23,7 @@ public class Confluence implements BackupStrategy {
 	);
 
 	@Override
-	public String backup(String title, String content) throws IOException, InterruptedException {
+	public String backup(String path, String title, String content) throws IOException, InterruptedException {
 		var spaceId = HttpUtil.get(baseUri + "/rest/api/space?spaceKey=" + space, headers)
 			.get("results").get(0).get("id");
 
@@ -39,7 +38,7 @@ public class Confluence implements BackupStrategy {
 			Map.of(
 				"spaceId", spaceId,
 				"title", title,
-				"parentId", parentId,
+				"parentId", path,
 				"body", Map.of(
 					"representation", "storage",
 					"value", html
