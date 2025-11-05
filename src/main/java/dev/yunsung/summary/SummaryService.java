@@ -14,7 +14,8 @@ public class SummaryService {
 
 	private final Summarizer summarizer;
 
-	public SummaryService(String modelName) {
+	public SummaryService() {
+		String modelName = System.getenv("MODEL_NAME");
 		this.summarizer = strategies.entrySet().stream()
 			.filter(entry -> modelName.startsWith(entry.getKey()))
 			.map(Map.Entry::getValue)

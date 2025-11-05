@@ -17,7 +17,7 @@ public class CommandListener extends ListenerAdapter {
 
 	private final Map<String, Command> commands = new HashMap<>();
 	private final RecorderService recorderService = new RecorderService();
-	private final SummaryService summaryService = new SummaryService(System.getenv("MODEL_NAME"));
+	private final SummaryService summaryService = new SummaryService();
 
 	public void registerCommands(JDA jda) {
 		List<Command> cmdList = List.of(
