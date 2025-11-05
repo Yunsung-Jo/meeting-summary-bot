@@ -23,6 +23,7 @@ dependencies {
     implementation 'net.dv8tion:JDA:6.1.0'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.20.0'
     implementation 'com.google.genai:google-genai:1.25.0'
+    implementation 'org.commonmark:commonmark:0.27.0'
 }
 
 test {
