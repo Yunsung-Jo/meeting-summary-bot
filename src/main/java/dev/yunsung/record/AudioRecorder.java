@@ -54,7 +54,9 @@ public abstract class AudioRecorder {
 
 		try {
 			// wav 파일로 저장
-			saveWavFile(audioData);
+			if (!saveWavFile(audioData)) {
+				return;
+			}
 
 			// 음성을 텍스트로 변환
 			transcribe(audioData);
@@ -63,7 +65,7 @@ public abstract class AudioRecorder {
 		}
 	}
 
-	private void saveWavFile(AudioData audioData) throws IOException {
+	private boolean saveWavFile(AudioData audioData) throws IOException {
 		String speaker = audioData.getSpeaker();
 		String time = audioData.getStartTime().format(formatter);
 		ByteArrayOutputStream outputStream = audioData.getAudio();
@@ -77,7 +79,7 @@ public abstract class AudioRecorder {
 		// 음성 데이터의 길이를 구함
 		float durationInMillis = (float)(1000L * ais.getFrameLength()) / audioFormat.getFrameRate();
 		if (durationInMillis < 1000.0F) { // 길이가 1초 미만이면 저장하지 않음
-			return;
+			return false;
 		}
 
 		// audio/{폴더 이름}/{사용자명}/{시작 시간.wav} 구조로 파일을 저장
@@ -91,6 +93,7 @@ public abstract class AudioRecorder {
 		// 파일에 음성 데이터를 저장
 		AudioSystem.write(ais, AudioFileFormat.Type.WAVE, file);
 		ais.close();
+		return true;
 	}
 
 	private void transcribe(AudioData audioData) throws IOException, InterruptedException {
