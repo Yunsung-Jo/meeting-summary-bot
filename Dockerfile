@@ -8,7 +8,7 @@ RUN chmod +x gradlew
 RUN ./gradlew shadowJar
 
 # 2. 실행 스테이지
-FROM amazoncorretto:21-alpine
+FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
 RUN apk --no-cache add curl
