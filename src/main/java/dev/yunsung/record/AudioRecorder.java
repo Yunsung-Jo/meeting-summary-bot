@@ -133,7 +133,11 @@ public abstract class AudioRecorder {
 		// 아직 저장되지 않은 음성 데이터가 있다면 저장
 		for (Long key : bufferAudios.keySet()) {
 			AudioData audioData = bufferAudios.get(key);
-			audioData.stopTimer();
+
+			// null 체크로 Race Condition 방지
+			if (audioData != null) {
+				audioData.stopTimer();
+			}
 		}
 
 		// 모든 STT 작업이 완료될 때까지 대기
