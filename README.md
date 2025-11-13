@@ -23,10 +23,12 @@ faster-whisper와 gemini를 기반으로 디스코드 음성 대화를 요약하
     GEMINI_API_KEY=
     ```
 5. 실행에는 도커가 필요하고 `docker compose up -d` 명령어로 실행할 수 있습니다.
-6. [Discord for Developers](https://discord.com/developers/applications)에서 Settings → OAuth2 → OAuth2 URL Generator의
+6. [Discord for Developers](https://discord.com/developers/applications)에서 Bot → Message Content Intent 설정을 체크해 주세요.
+   <img width="1401" height="85" alt="message-content-intent" src="https://github.com/user-attachments/assets/04a9f47a-38bc-4df2-9444-485386b7aff4" />
+8. [Discord for Developers](https://discord.com/developers/applications)에서 Settings → OAuth2 → OAuth2 URL Generator의
    bot을 체크하고 Bot Permissions는 필요한 권한만 체크해 주세요.
    <img width="800" alt="permissions" src="https://github.com/user-attachments/assets/3ee22868-341c-4d15-aaa3-43b0d031118f" />
-7. 생성된 URL로 원하는 서버에 봇을 추가하세요.
+9. 생성된 URL로 원하는 서버에 봇을 추가하세요.
 
 ## 커스텀
 
