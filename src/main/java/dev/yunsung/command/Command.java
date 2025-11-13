@@ -7,6 +7,8 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
+import dev.yunsung.util.LogUtil;
+
 public abstract class Command {
 
 	public abstract String getName();
@@ -45,7 +47,7 @@ public abstract class Command {
 				try {
 					cmd.execute(event);
 				} catch (Exception e) {
-					System.out.println(e.getMessage());
+					LogUtil.error(cmd.getName() + " 명령을 실패했습니다", e);
 				}
 			});
 	}

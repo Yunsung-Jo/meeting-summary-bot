@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
 import dev.yunsung.command.SubCommand;
 import dev.yunsung.record.RecorderService;
+import dev.yunsung.util.LogUtil;
 
 public record MeetingStartCommand(RecorderService recorderService) implements SubCommand {
 
@@ -50,6 +51,8 @@ public record MeetingStartCommand(RecorderService recorderService) implements Su
 		audioRecorder.startRecording(voiceChannel);
 
 		// 채널에 메시지 전송
-		event.reply(voiceChannel.getAsMention() + "에서 회의를 시작합니다.").queue();
+		String msg = voiceChannel.getAsMention() + "에서 회의를 시작합니다.";
+		event.reply(msg).queue();
+		LogUtil.info(msg);
 	}
 }

@@ -17,6 +17,7 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 
 import dev.yunsung.stt.STT;
+import dev.yunsung.util.LogUtil;
 
 public abstract class AudioRecorder {
 
@@ -61,7 +62,7 @@ public abstract class AudioRecorder {
 			// 음성을 텍스트로 변환
 			transcribe(audioData);
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			LogUtil.error("음성 저장/변환에 실패했습니다", e);
 		}
 	}
 

@@ -18,6 +18,7 @@ import dev.yunsung.record.AudioData;
 import dev.yunsung.record.CsvExporter;
 import dev.yunsung.record.RecorderService;
 import dev.yunsung.summary.SummaryService;
+import dev.yunsung.util.LogUtil;
 
 public record MeetingStopCommand(RecorderService recorderService, SummaryService summaryService) implements SubCommand {
 
@@ -40,17 +41,23 @@ public record MeetingStopCommand(RecorderService recorderService, SummaryService
 			return;
 		}
 
+		LogUtil log = new LogUtil();
+		log.start("회의 종료를 시작합니다.");
+
 		// 봇과 음성 채널의 연결을 해제
 		event.getGuild().getAudioManager().closeAudioConnection();
+		log.record("봇과 음성 채널의 연결을 해제했습니다.");
 
 		// 회의 종료
 		event.deferReply().queue();
 		String folderName = audioRecorder.getFolderName();
 		audioRecorder.stopRecording();
+		log.record("음성 녹음을 종료했습니다.");
 
 		// 회의 내용 저장
 		TreeMap<LocalDateTime, AudioData> archiveAudios = audioRecorder.getArchiveAudios();
 		File file = CsvExporter.saveAsCsv(archiveAudios, folderName);
+		log.record("회의 내용을 csv로 저장했습니다.");
 
 		// 회의 요약
 		String summary = summaryService.summarize(archiveAudios);
@@ -62,11 +69,14 @@ public record MeetingStopCommand(RecorderService recorderService, SummaryService
 				.addFiles(FileUpload.fromData(file))
 				.queue();
 		}
+		log.record("회의를 요약했습니다.");
 
 		// 요약 내용 저장
 		Path resultPath = Paths.get("audio/" + folderName + "/result.txt");
 		Files.writeString(resultPath, summary);
+		log.record("요약 내용을 파일로 저장했습니다.");
 
 		recorderService.removeRecorder(guild.getIdLong());
+		log.record("회의를 성공적으로 종료했습니다.");
 	}
 }

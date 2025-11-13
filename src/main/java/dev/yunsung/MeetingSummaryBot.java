@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import dev.yunsung.command.CommandListener;
+import dev.yunsung.util.LogUtil;
 
 public class MeetingSummaryBot {
 
@@ -14,7 +15,7 @@ public class MeetingSummaryBot {
 		String token = System.getenv("DISCORD_TOKEN");
 
 		if (token.isBlank()) {
-			System.out.println("'DISCORD_TOKEN'을 찾을 수 없습니다.");
+			LogUtil.error("'DISCORD_TOKEN'을 찾을 수 없습니다.");
 		}
 
 		// 디스코드 봇 연결

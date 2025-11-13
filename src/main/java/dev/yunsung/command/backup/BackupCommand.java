@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 import dev.yunsung.backup.BackupService;
 import dev.yunsung.command.Command;
+import dev.yunsung.util.LogUtil;
 
 public class BackupCommand extends Command {
 
@@ -84,9 +85,10 @@ public class BackupCommand extends Command {
 			String summary = Files.readString(file.toPath(), StandardCharsets.UTF_8);
 			String backup = backupService.backup(pathOption.getAsString(), title, summary);
 			event.getHook().sendMessage("백업에 성공했습니다.\n" + backup).queue();
+			LogUtil.info("백업에 성공했습니다: " + backup);
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
 			event.getHook().sendMessage("백업에 실패했습니다.").queue();
+			LogUtil.error("백업에 실패했습니다", e);
 		}
 	}
 

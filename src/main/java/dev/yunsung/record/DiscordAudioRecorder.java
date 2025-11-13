@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.Channel;
 
 import dev.yunsung.stt.STT;
+import dev.yunsung.util.LogUtil;
 
 public final class DiscordAudioRecorder extends AudioRecorder implements AudioReceiveHandler {
 
@@ -52,7 +53,7 @@ public final class DiscordAudioRecorder extends AudioRecorder implements AudioRe
 			// 디스코드에서 받아온 음성 데이터 추가
 			bufferAudios.get(userId).write(bytes);
 		} catch (IOException e) {
-			System.out.println(e.getMessage());
+			LogUtil.error("음성 데이터를 기록하지 못했습니다", e);
 		}
 	}
 
