@@ -1,0 +1,8 @@
+services:
+  meeting-summary-bot:
+    image: yunsung1206/meeting-summary-bot:latest
+    env_file:
+      - .env
+    volumes:
+      - ./audio:/app/audio:rw
+      - ./PROMPT:/app/PROMPT:ro
