@@ -11,7 +11,9 @@ faster-whisper와 gemini를 기반으로 디스코드 음성 대화를 요약하
 
 ## 실행 방법
 
-1. [Releases](https://github.com/Yunsung-Jo/meeting-summary-bot/releases)에서 `meeting-summary-bot.zip`을 다운로드 및 압축 해제하세요.
+1. [Releases](https://github.com/Yunsung-Jo/meeting-summary-bot/releases)에서 `meeting-summary-bot.zip`을 다운로드 및 압축
+   해제하세요.<br>
+   macOS는 [아래](#macos)를 참고해 주세요.
 2. [Discord for Developers](https://discord.com/developers/applications)에서 새로운 앱을 생성하고 토큰을 발급받아 주세요.
 3. [Google AI Studio](https://aistudio.google.com/)에서 API 키를 만들어주세요.
 4. 발급받은 키를 `.env` 파일에 넣어주세요.
@@ -25,10 +27,18 @@ faster-whisper와 gemini를 기반으로 디스코드 음성 대화를 요약하
 5. 실행에는 도커가 필요하고 `docker compose up -d` 명령어로 실행할 수 있습니다.
 6. [Discord for Developers](https://discord.com/developers/applications)에서 Bot → Message Content Intent 설정을 체크해 주세요.
    <img width="1401" height="85" alt="message-content-intent" src="https://github.com/user-attachments/assets/04a9f47a-38bc-4df2-9444-485386b7aff4" />
-8. [Discord for Developers](https://discord.com/developers/applications)에서 Settings → OAuth2 → OAuth2 URL Generator의
+7. [Discord for Developers](https://discord.com/developers/applications)에서 Settings → OAuth2 → OAuth2 URL Generator의
    bot을 체크하고 Bot Permissions는 필요한 권한만 체크해 주세요.
    <img width="800" alt="permissions" src="https://github.com/user-attachments/assets/3ee22868-341c-4d15-aaa3-43b0d031118f" />
-9. 생성된 URL로 원하는 서버에 봇을 추가하세요.
+8. 생성된 URL로 원하는 서버에 봇을 추가하세요.
+
+### macOS
+
+- Apple Silicon 기반 macOS 환경에서는 [mlx-whisper](https://github.com/ml-explore/mlx-examples/tree/main/whisper)를 사용할 수 있습니다.
+- [Releases](https://github.com/Yunsung-Jo/meeting-summary-bot/releases)에서 `meeting-summary-bot-mlx.zip`을 다운로드 및 압축
+  해제하세요.
+- 터미널에서 `chmod +x start.command`를 입력하여 실행 권한을 부여하세요.
+- `start.command`를 실행하고, [실행 방법](#실행-방법)을 이어서 진행해 주세요.
 
 ## 커스텀
 
@@ -60,7 +70,7 @@ faster-whisper와 gemini를 기반으로 디스코드 음성 대화를 요약하
 
 ## 주의 사항
 
-1. 첫 실행에는 `whisper-api`가 `./build/whisper` 경로에 선택한 모델을 다운로드하기 때문에 시간이 오래 걸립니다.
+1. 첫 실행에는 `whisper-api`가 `./build/whisper`경로에 선택한 모델을 다운로드하기 때문에 시간이 오래 걸립니다.
 2. `whisper-api` 컨테이너에서 `INFO: Uvicorn running on http://0.0.0.0:8000⁠ (Press CTRL+C to quit)` 로그를 확인한 후, 디스코드에서 명령어를
    실행하면 됩니다.
 
