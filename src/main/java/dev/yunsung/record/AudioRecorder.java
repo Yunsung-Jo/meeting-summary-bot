@@ -22,6 +22,7 @@ import dev.yunsung.util.LogUtil;
 public abstract class AudioRecorder {
 
 	static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
+	static int silentThreshold = Integer.parseInt(System.getenv("SILENT_THRESHOLD"));
 
 	protected final Map<Long, AudioData> bufferAudios = new ConcurrentHashMap<>();
 	protected final TreeMap<LocalDateTime, AudioData> archiveAudios = new TreeMap<>();
@@ -74,6 +75,12 @@ public abstract class AudioRecorder {
 		AudioFormat audioFormat = getAudioFormat();
 		byte[] bytes = outputStream.toByteArray();
 
+		if (isSilent(bytes, silentThreshold)) {
+			LogUtil.info(speaker + "님의 조용한 음성을 감지했습니다.");
+			return false;
+		}
+		LogUtil.info(speaker + "님의 음성을 감지했습니다.");
+
 		AudioInputStream ais = new AudioInputStream(new ByteArrayInputStream(bytes), audioFormat,
 			bytes.length / audioFormat.getFrameSize());
 
@@ -94,6 +101,26 @@ public abstract class AudioRecorder {
 		// 파일에 음성 데이터를 저장
 		AudioSystem.write(ais, AudioFileFormat.Type.WAVE, file);
 		ais.close();
+		return true;
+	}
+
+	public boolean isSilent(byte[] audioData, int threshold) {
+		if (audioData == null || audioData.length == 0) {
+			return true;
+		}
+
+		int length = audioData.length - (audioData.length % 2);
+
+		for (int i = 0; i < length; i += 2) {
+			// 2바이트를 16비트 short로 변환 (Big-Endian)
+			// (첫 번째 바이트 << 8) | (두 번째 바이트 & 0xFF)
+			short sample = (short)((audioData[i] << 8) | (audioData[i + 1] & 0xFF));
+
+			// 소리의 크기가 임계값을 넘으면 false 리턴
+			if (Math.abs(sample) > threshold) {
+				return false;
+			}
+		}
 		return true;
 	}
 
