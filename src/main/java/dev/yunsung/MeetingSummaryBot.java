@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import dev.yunsung.command.CommandListener;
+import dev.yunsung.util.EnvUtil;
 import dev.yunsung.util.LogUtil;
 
 public class MeetingSummaryBot {
@@ -12,7 +13,7 @@ public class MeetingSummaryBot {
 	public static CommandListener commandListener = new CommandListener();
 
 	public static void main(String[] args) {
-		String token = System.getenv("DISCORD_TOKEN");
+		String token = EnvUtil.getenv("DISCORD_TOKEN");
 
 		if (token.isBlank()) {
 			LogUtil.error("'DISCORD_TOKEN'을 찾을 수 없습니다.");

@@ -17,12 +17,13 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 
 import dev.yunsung.stt.STT;
+import dev.yunsung.util.EnvUtil;
 import dev.yunsung.util.LogUtil;
 
 public abstract class AudioRecorder {
 
 	static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
-	static int silentThreshold = Integer.parseInt(System.getenv("SILENT_THRESHOLD"));
+	static int silentThreshold = EnvUtil.getenv("SILENT_THRESHOLD", 4000);
 
 	protected final Map<Long, AudioData> bufferAudios = new ConcurrentHashMap<>();
 	protected final TreeMap<LocalDateTime, AudioData> archiveAudios = new TreeMap<>();

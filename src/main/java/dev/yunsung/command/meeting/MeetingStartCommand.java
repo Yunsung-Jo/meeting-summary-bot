@@ -13,13 +13,14 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
 import dev.yunsung.command.SubCommand;
 import dev.yunsung.record.RecorderService;
+import dev.yunsung.util.EnvUtil;
 import dev.yunsung.util.LogUtil;
 
 public record MeetingStartCommand(RecorderService recorderService) implements SubCommand {
 
 	@Override
 	public String getName() {
-		return System.getenv("MEETING_START_COMMAND");
+		return EnvUtil.getenv("MEETING_START_COMMAND", "시작");
 	}
 
 	@Override

@@ -9,8 +9,10 @@ import java.util.function.Consumer;
 
 import net.dv8tion.jda.api.entities.User;
 
+import dev.yunsung.util.EnvUtil;
+
 public class AudioData {
-	static final int RECORD_DELAY = Integer.parseInt(System.getenv("RECORD_DELAY"));
+	static final int RECORD_DELAY = EnvUtil.getenv("RECORD_DELAY", 1000);
 
 	private final long id;
 	private final String speaker;

@@ -9,15 +9,16 @@ import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
 
+import dev.yunsung.util.EnvUtil;
 import dev.yunsung.util.HttpUtil;
 
 public class Confluence implements BackupStrategy {
 
-	private final String space = System.getenv("CONFLUENCE_SPACE");
-	private final String baseUri = "https://" + System.getenv("CONFLUENCE_DOMAIN") + ".atlassian.net/wiki";
+	private final String space = EnvUtil.getenv("CONFLUENCE_SPACE");
+	private final String baseUri = "https://" + EnvUtil.getenv("CONFLUENCE_DOMAIN") + ".atlassian.net/wiki";
 	private final Map<String, String> headers = Map.of(
 		"Authorization", "Basic " + Base64.getEncoder().encodeToString(
-			(System.getenv("CONFLUENCE_EMAIL") + ":" + System.getenv("CONFLUENCE_API_TOKEN"))
+			(EnvUtil.getenv("CONFLUENCE_EMAIL") + ":" + EnvUtil.getenv("CONFLUENCE_API_TOKEN"))
 				.getBytes(StandardCharsets.UTF_8)
 		)
 	);

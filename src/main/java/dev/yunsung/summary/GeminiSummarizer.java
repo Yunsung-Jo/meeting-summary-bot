@@ -11,6 +11,7 @@ import com.google.genai.Client;
 import com.google.genai.types.GenerateContentResponse;
 
 import dev.yunsung.record.AudioData;
+import dev.yunsung.util.EnvUtil;
 import dev.yunsung.util.TimeUtil;
 
 public class GeminiSummarizer implements Summarizer {
@@ -28,7 +29,7 @@ public class GeminiSummarizer implements Summarizer {
 	 */
 	private static final String PROMPT;
 	private final Client client = new Client();
-	private final String modelName = System.getenv("MODEL_NAME");
+	private final String modelName = EnvUtil.getenv("MODEL_NAME", "gemini-2.5-flash-lite");
 
 	static {
 		try {

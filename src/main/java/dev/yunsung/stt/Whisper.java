@@ -3,6 +3,7 @@ package dev.yunsung.stt;
 import java.io.IOException;
 import java.util.Map;
 
+import dev.yunsung.util.EnvUtil;
 import dev.yunsung.util.HttpUtil;
 
 public class Whisper implements STT {
@@ -12,7 +13,7 @@ public class Whisper implements STT {
 		Map<String, String> requestBody = Map.of("file_path", "/audio/" + path);
 
 		var jsonNode = HttpUtil.post(
-			System.getenv("WHISPER_API_URL"),
+			EnvUtil.getenv("WHISPER_API_URL", "http://whisper-api:8000/transcribe/"),
 			requestBody
 		);
 		return jsonNode.get("transcription").asText();

@@ -6,6 +6,7 @@ import dev.yunsung.command.Command;
 import dev.yunsung.command.SubCommand;
 import dev.yunsung.record.RecorderService;
 import dev.yunsung.summary.SummaryService;
+import dev.yunsung.util.EnvUtil;
 
 public class MeetingCommand extends Command {
 
@@ -14,7 +15,7 @@ public class MeetingCommand extends Command {
 
 	@Override
 	public String getName() {
-		return System.getenv("MEETING_COMMAND");
+		return EnvUtil.getenv("MEETING_COMMAND", "회의");
 	}
 
 	@Override

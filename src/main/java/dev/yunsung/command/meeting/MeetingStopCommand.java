@@ -22,13 +22,14 @@ import dev.yunsung.record.CsvExporter;
 import dev.yunsung.record.DiscordAudioRecorder;
 import dev.yunsung.record.RecorderService;
 import dev.yunsung.summary.SummaryService;
+import dev.yunsung.util.EnvUtil;
 import dev.yunsung.util.LogUtil;
 
 public record MeetingStopCommand(RecorderService recorderService, SummaryService summaryService) implements SubCommand {
 
 	@Override
 	public String getName() {
-		return System.getenv("MEETING_STOP_COMMAND");
+		return EnvUtil.getenv("MEETING_STOP_COMMAND", "종료");
 	}
 
 	public SubcommandData getData() {

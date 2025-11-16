@@ -19,18 +19,19 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 import dev.yunsung.backup.BackupService;
 import dev.yunsung.command.Command;
+import dev.yunsung.util.EnvUtil;
 import dev.yunsung.util.LogUtil;
 
 public class BackupCommand extends Command {
 
-	private static final int FILE_LIST_LIMIT = Integer.parseInt(System.getenv("FILE_LIST_LIMIT"));
+	private static final int FILE_LIST_LIMIT = EnvUtil.getenv("FILE_LIST_LIMIT", 5);
 	private static final Pattern FOLDER_PATTERN = Pattern.compile("^([^/\\\\:]+)-([^/\\\\:]+)-(\\d{8}-\\d{6})$");
 
 	private final BackupService backupService = new BackupService();
 
 	@Override
 	public String getName() {
-		return System.getenv("BACKUP_COMMAND");
+		return EnvUtil.getenv("BACKUP_COMMAND", "백업");
 	}
 
 	@Override
@@ -41,7 +42,7 @@ public class BackupCommand extends Command {
 	@Override
 	public SlashCommandData getData() {
 		OptionData pathOption = new OptionData(OptionType.STRING, "경로", "백업할 경로", true);
-		String backupPath = System.getenv("BACKUP_PATH");
+		String backupPath = EnvUtil.getenv("BACKUP_PATH");
 		if (backupPath != null && !backupPath.isEmpty()) {
 			Arrays.stream(backupPath.split(","))
 				.map(String::trim)

@@ -2,6 +2,8 @@ package dev.yunsung.backup;
 
 import java.util.Map;
 
+import dev.yunsung.util.EnvUtil;
+
 public class BackupService {
 
 	private static final Map<String, BackupStrategy> strategies = Map.of(
@@ -12,12 +14,12 @@ public class BackupService {
 	private BackupStrategy backupStrategy;
 
 	public BackupService() {
-		useBackup = System.getenv("USE_BACKUP").equals("true");
+		useBackup = EnvUtil.getenv("USE_BACKUP", false);
 		if (!useBackup) {
 			return;
 		}
 
-		String backupStrategy = System.getenv("BACKUP_STRATEGY");
+		String backupStrategy = EnvUtil.getenv("BACKUP_STRATEGY");
 		this.backupStrategy = strategies.entrySet().stream()
 			.filter(entry -> backupStrategy.equals(entry.getKey()))
 			.map(Map.Entry::getValue)

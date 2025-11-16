@@ -9,13 +9,14 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import dev.yunsung.command.SubCommand;
 import dev.yunsung.record.RecorderService;
 import dev.yunsung.summary.SummaryService;
+import dev.yunsung.util.EnvUtil;
 
 public record MeetingSummaryCommand(RecorderService recorderService, SummaryService summaryService)
 	implements SubCommand {
 
 	@Override
 	public String getName() {
-		return System.getenv("MEETING_SUMMARY_COMMAND");
+		return EnvUtil.getenv("MEETING_SUMMARY_COMMAND", "요약");
 	}
 
 	@Override

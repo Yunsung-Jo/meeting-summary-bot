@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import dev.yunsung.record.AudioData;
+import dev.yunsung.util.EnvUtil;
 
 public class SummaryService {
 
@@ -15,7 +16,7 @@ public class SummaryService {
 	private final Summarizer summarizer;
 
 	public SummaryService() {
-		String modelName = System.getenv("MODEL_NAME");
+		String modelName = EnvUtil.getenv("MODEL_NAME", "gemini-2.5-flash-lite");
 		this.summarizer = strategies.entrySet().stream()
 			.filter(entry -> modelName.startsWith(entry.getKey()))
 			.map(Map.Entry::getValue)
