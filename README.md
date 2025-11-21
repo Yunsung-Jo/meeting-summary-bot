@@ -38,6 +38,7 @@ faster-whisper와 gemini를 기반으로 디스코드 음성 대화를 요약하
 - [Releases](https://github.com/Yunsung-Jo/meeting-summary-bot/releases)에서 `meeting-summary-bot-mlx.zip`을 다운로드 및 압축
   해제하세요.
 - 터미널에서 `chmod +x start.command`를 입력하여 실행 권한을 부여하세요.
+- [Homebrew](https://brew.sh/ko/)와 [ffmpeg](https://formulae.brew.sh/formula/ffmpeg)가 필요합니다.
 - `start.command`를 실행하고, [실행 방법](#실행-방법)을 이어서 진행해 주세요.
 
 ## 커스텀
