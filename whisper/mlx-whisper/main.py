@@ -57,8 +57,13 @@ def transcribe_audio(req: TranscriptionRequest):
                     fp16=True
                 )
 
-            transcription = result["text"]
-            print(f"변환 완료 (락 해제): {file_path}")
+            segments = result["segments"]
+            transcription = ""
+
+            if segments and segments[0]['no_speech_prob'] < 0.3:
+                transcription = result["text"]
+
+            print(f"변환 완료 (락 해제): ({transcription})")
 
             return TranscriptionResponse(transcription=transcription)
 

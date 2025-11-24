@@ -26,8 +26,6 @@ class TranscriptionRequest(BaseModel):
 
 class TranscriptionResponse(BaseModel):
     transcription: str
-    language: str
-    language_probability: float
 
 
 # 3. API 엔드포인트
@@ -54,15 +52,18 @@ def transcribe_audio_path(request: TranscriptionRequest):
         else:
             segments, info = model.transcribe(file_path, beam_size=5)
 
-        # 변환된 텍스트 조합
-        transcription = " ".join(segment.text for segment in segments).strip()
+        segments = list(segments)
 
-        print(f"변환 완료 (언어: {info.language}, 정확도: {info.language_probability})")
+        transcription = ""
+
+        # 변환된 텍스트 조합
+        if segments and segments[0].no_speech_prob < 0.3:
+            transcription = " ".join(segment.text for segment in segments).strip()
+
+        print(f"변환 완료 ({transcription})")
 
         return TranscriptionResponse(
             transcription=transcription,
-            language=info.language,
-            language_probability=info.language_probability
         )
 
     except Exception as e:
