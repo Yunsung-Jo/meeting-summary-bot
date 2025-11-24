@@ -46,7 +46,13 @@ public class GeminiSummarizer implements Summarizer {
 		}
 
 		List<String> attendees = getAttendees(archiveAudios);
-		String timestamp = TimeUtil.formatTimestamp(archiveAudios.firstKey());
+		LocalDateTime startTime = archiveAudios.firstEntry().getValue().getStartTime();
+		LocalDateTime endTime = archiveAudios.lastEntry().getValue().getEndTime();
+		String timestamp = "%s ~ %s (%s)".formatted(
+			TimeUtil.formatTimestamp(startTime),
+			TimeUtil.formatTimestamp(endTime),
+			TimeUtil.formatDuration(startTime, endTime)
+		);
 		String script = getScript(archiveAudios);
 
 		String prompt = PROMPT
