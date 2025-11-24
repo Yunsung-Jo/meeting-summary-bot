@@ -89,18 +89,22 @@ public record MeetingStopCommand(RecorderService recorderService, SummaryService
 
 		// 회의 요약
 		String summary = summaryService.summarize(archiveAudios);
-		if (archiveAudios.isEmpty()) {
-			hook.sendMessage(summary).queue();
-		} else {
-			hook.sendMessage(summary)
-				.addFiles(FileUpload.fromData(file))
-				.queue();
-		}
 		log.record("회의를 요약했습니다.");
 
 		// 요약 내용 저장
 		Path resultPath = Paths.get("audio/" + folderName + "/result.txt");
 		Files.writeString(resultPath, summary);
 		log.record("요약 내용을 파일로 저장했습니다.");
+
+		if (archiveAudios.isEmpty()) {
+			hook.sendMessage(summary).queue();
+		} else {
+			hook.sendMessage("회의를 요약했습니다.")
+				.addFiles(
+					FileUpload.fromData(resultPath),
+					FileUpload.fromData(file)
+				)
+				.queue();
+		}
 	}
 }

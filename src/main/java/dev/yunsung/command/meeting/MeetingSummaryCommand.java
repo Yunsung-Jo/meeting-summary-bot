@@ -1,10 +1,15 @@
 package dev.yunsung.command.meeting;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Objects;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import net.dv8tion.jda.api.utils.FileUpload;
 
 import dev.yunsung.command.SubCommand;
 import dev.yunsung.record.RecorderService;
@@ -25,7 +30,7 @@ public record MeetingSummaryCommand(RecorderService recorderService, SummaryServ
 	}
 
 	@Override
-	public void execute(SlashCommandInteractionEvent event) {
+	public void execute(SlashCommandInteractionEvent event) throws IOException {
 		Guild guild = Objects.requireNonNull(event.getGuild());
 		var audioRecorder = recorderService.getRecorder(guild);
 
@@ -38,6 +43,13 @@ public record MeetingSummaryCommand(RecorderService recorderService, SummaryServ
 
 		// 회의 요약
 		String summary = summaryService.summarize(audioRecorder.getArchiveAudios());
-		event.getHook().sendMessage(summary).queue();
+
+		Path resultPath = Paths.get("audio/" + audioRecorder.getFolderName() + "/result.txt");
+		Files.writeString(resultPath, summary);
+
+		event.getHook()
+			.sendMessage("회의를 요약했습니다.")
+			.addFiles(FileUpload.fromData(resultPath))
+			.queue();
 	}
 }
