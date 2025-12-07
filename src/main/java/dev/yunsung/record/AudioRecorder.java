@@ -1,8 +1,7 @@
 package dev.yunsung.record;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -63,38 +62,39 @@ public abstract class AudioRecorder {
 			transcribe(audioData);
 		} catch (Exception e) {
 			LogUtil.error("음성 저장/변환에 실패했습니다", e);
+		} finally {
+			audioData.deleteTempFile();
 		}
 	}
 
 	private boolean saveWavFile(AudioData audioData) throws IOException {
 		String speaker = audioData.getSpeaker();
 		String time = audioData.getStartTime().format(formatter);
-		ByteArrayOutputStream outputStream = audioData.getAudio();
+		File audioFile = audioData.getAudioFile();
 
 		AudioFormat audioFormat = getAudioFormat();
-		byte[] bytes = outputStream.toByteArray();
 
-		AudioInputStream ais = new AudioInputStream(new ByteArrayInputStream(bytes), audioFormat,
-			bytes.length / audioFormat.getFrameSize());
+		try (AudioInputStream ais = new AudioInputStream(new FileInputStream(audioFile), audioFormat,
+			audioFile.length() / audioFormat.getFrameSize())) {
 
-		// 음성 데이터의 길이를 구함
-		float durationInMillis = (float)(1000L * ais.getFrameLength()) / audioFormat.getFrameRate();
-		if (durationInMillis < 1000.0F) { // 길이가 1초 미만이면 저장하지 않음
-			return false;
+			// 음성 데이터의 길이를 구함
+			float durationInMillis = (float)(1000L * ais.getFrameLength()) / audioFormat.getFrameRate();
+			if (durationInMillis < 1000.0F) { // 길이가 1초 미만이면 저장하지 않음
+				return false;
+			}
+
+			// audio/{폴더 이름}/{사용자명}/{시작 시간.wav} 구조로 파일을 저장
+			String fileName = time + ".wav";
+			File root = new File("audio/" + getFolderName() + "/" + speaker);
+			File file = new File(root.getPath() + "/" + fileName);
+
+			// 폴더가 없다면 생성
+			root.mkdirs();
+
+			// 파일에 음성 데이터를 저장
+			AudioSystem.write(ais, AudioFileFormat.Type.WAVE, file);
+			return true;
 		}
-
-		// audio/{폴더 이름}/{사용자명}/{시작 시간.wav} 구조로 파일을 저장
-		String fileName = time + ".wav";
-		File root = new File("audio/" + getFolderName() + "/" + speaker);
-		File file = new File(root.getPath() + "/" + fileName);
-
-		// 폴더가 없다면 생성
-		root.mkdirs();
-
-		// 파일에 음성 데이터를 저장
-		AudioSystem.write(ais, AudioFileFormat.Type.WAVE, file);
-		ais.close();
-		return true;
 	}
 
 	private void transcribe(AudioData audioData) throws IOException, InterruptedException {

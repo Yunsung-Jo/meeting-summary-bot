@@ -47,11 +47,21 @@ public final class DiscordAudioRecorder extends AudioRecorder implements AudioRe
 		long userId = user.getIdLong();
 		byte[] bytes = userAudio.getAudioData(1.0);
 
-		bufferAudios.computeIfAbsent(userId, k -> AudioData.discord(user, this::saveVoice));
-
 		try {
+			bufferAudios.computeIfAbsent(userId, k -> {
+				try {
+					return AudioData.discord(user, this::saveVoice);
+				} catch (IOException e) {
+					LogUtil.error("AudioData를 생성하지 못했습니다", e);
+					return null;
+				}
+			});
+
 			// 디스코드에서 받아온 음성 데이터 추가
-			bufferAudios.get(userId).write(bytes);
+			AudioData audioData = bufferAudios.get(userId);
+			if (audioData != null) {
+				audioData.write(bytes);
+			}
 		} catch (IOException e) {
 			LogUtil.error("음성 데이터를 기록하지 못했습니다", e);
 		}
