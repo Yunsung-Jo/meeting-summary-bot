@@ -5,8 +5,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import net.dv8tion.jda.api.entities.User;
@@ -25,8 +27,9 @@ public class AudioData {
 	private final LocalDateTime startTime;
 	private LocalDateTime endTime;
 	private final Consumer<AudioData> callback;
-	private Timer timer;
 	private volatile boolean isClosed = false;
+	private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+	private ScheduledFuture<?> timeoutTask;
 
 	private AudioData(long id, String speaker, Consumer<AudioData> callback) throws IOException {
 		this.id = id;
@@ -83,9 +86,8 @@ public class AudioData {
 	}
 
 	private void resetTimer() {
-		// 이미 사용자의 타이머가 작동 중이라면 멈추기
-		if (timer != null) {
-			timer.cancel();
+		if (timeoutTask != null && !timeoutTask.isDone()) {
+			timeoutTask.cancel(false);
 		}
 		startTimer();
 	}
@@ -94,13 +96,7 @@ public class AudioData {
 		if (isClosed) {
 			return;
 		}
-		timer = new Timer();
-		timer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				stopTimer();
-			}
-		}, RECORD_DELAY);
+		timeoutTask = scheduler.schedule(this::stopTimer, RECORD_DELAY, TimeUnit.MILLISECONDS);
 	}
 
 	public synchronized void stopTimer() {
@@ -109,9 +105,11 @@ public class AudioData {
 		}
 		isClosed = true;
 
-		if (timer != null) {
-			timer.cancel();
+		if (timeoutTask != null) {
+			timeoutTask.cancel(false);
 		}
+		scheduler.shutdown();
+
 		try {
 			audioStream.close();
 		} catch (IOException e) {
