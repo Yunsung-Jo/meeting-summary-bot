@@ -9,9 +9,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.function.Consumer;
 
+import net.dv8tion.jda.api.entities.User;
+
 import dev.yunsung.util.EnvUtil;
 import dev.yunsung.util.LogUtil;
-import net.dv8tion.jda.api.entities.User;
 
 public class AudioData {
 	static final int RECORD_DELAY = EnvUtil.getenv("RECORD_DELAY", 1000);
@@ -25,6 +26,7 @@ public class AudioData {
 	private LocalDateTime endTime;
 	private final Consumer<AudioData> callback;
 	private Timer timer;
+	private volatile boolean isClosed = false;
 
 	private AudioData(long id, String speaker, Consumer<AudioData> callback) throws IOException {
 		this.id = id;
@@ -72,7 +74,10 @@ public class AudioData {
 		this.sentence = sentence;
 	}
 
-	public void write(byte[] audio) throws IOException {
+	public synchronized void write(byte[] audio) throws IOException {
+		if (isClosed) {
+			return;
+		}
 		this.audioStream.write(audio);
 		resetTimer();
 	}
@@ -86,6 +91,9 @@ public class AudioData {
 	}
 
 	private void startTimer() {
+		if (isClosed) {
+			return;
+		}
 		timer = new Timer();
 		timer.schedule(new TimerTask() {
 			@Override
@@ -95,7 +103,12 @@ public class AudioData {
 		}, RECORD_DELAY);
 	}
 
-	public void stopTimer() {
+	public synchronized void stopTimer() {
+		if (isClosed) {
+			return;
+		}
+		isClosed = true;
+
 		if (timer != null) {
 			timer.cancel();
 		}
