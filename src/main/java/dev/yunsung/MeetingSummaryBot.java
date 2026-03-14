@@ -2,8 +2,10 @@ package dev.yunsung;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.audio.AudioModuleConfig;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
+import club.minnced.discord.jdave.interop.JDaveSessionFactory;
 import dev.yunsung.command.CommandListener;
 import dev.yunsung.util.EnvUtil;
 import dev.yunsung.util.LogUtil;
@@ -22,6 +24,8 @@ public class MeetingSummaryBot {
 		// 디스코드 봇 연결
 		JDA jda = JDABuilder
 			.createDefault(token)
+			.setAudioModuleConfig(new AudioModuleConfig()
+				.withDaveSessionFactory(new JDaveSessionFactory()))
 			.enableIntents(GatewayIntent.MESSAGE_CONTENT)
 			.addEventListeners(commandListener)
 			.build();
