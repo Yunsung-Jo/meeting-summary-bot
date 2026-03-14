@@ -1,5 +1,5 @@
 # 1. 빌드 스테이지
-FROM gradle:8-jdk21 AS builder
+FROM eclipse-temurin:25-jdk AS builder
 
 WORKDIR /app
 
