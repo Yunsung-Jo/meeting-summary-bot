@@ -8,6 +8,9 @@ version = '1.2.4'
 
 repositories {
     mavenCentral()
+    maven {
+        url 'https://maven.lavalink.dev/snapshots'
+    }
 }
 
 jar {
@@ -20,7 +23,12 @@ dependencies {
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    implementation 'net.dv8tion:JDA:6.1.0'
+    implementation 'net.dv8tion:JDA:6.3.1'
+    implementation("club.minnced:jdave-api:0.1.7")
+    implementation("club.minnced:jdave-native-linux-x86-64:0.1.7")
+    implementation("club.minnced:jdave-native-linux-aarch64:0.1.7")
+    implementation("club.minnced:jdave-native-win-x86-64:0.1.7")
+    implementation("club.minnced:jdave-native-darwin:0.1.7")
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.20.0'
     implementation 'com.google.genai:google-genai:1.25.0'
     implementation 'org.commonmark:commonmark:0.27.0'

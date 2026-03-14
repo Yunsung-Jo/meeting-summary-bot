@@ -16,10 +16,10 @@ COPY src src
 RUN ./gradlew shadowJar --no-daemon
 
 # 2. 실행 스테이지
-FROM eclipse-temurin:21-jre
+FROM eclipse-temurin:25-jre
 
 WORKDIR /app
 RUN apt-get update && apt-get install -y libopus0 libopus-dev libc6 libstdc++6 curl && rm -rf /var/lib/apt/lists/*
 COPY --from=builder /app/build/libs/*all.jar app.jar
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "--enable-native-access=ALL-UNNAMED", "-jar", "app.jar"]
